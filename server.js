@@ -25,11 +25,10 @@ const server = http.createServer((req, res) => {
       console.log(parsedBody); //the output here will be "message=<your message>" because the name of the input field was 'message' in html. Key-Value Pair.
       const message = parsedBody.split('=')[1];
       fs.writeFileSync('messages.txt', message);
+      res.statusCode = 301;
+      res.setHeader('Location', '/'); //redirects the request back to the form part
+      return res.end();
     });
-
-    res.statusCode = 301;
-    res.setHeader('Location', '/'); //redirects the request back to the form part
-    return res.end();
   }
 
   res.setHeader('Content-Type', 'text/html'); //setting a response header
