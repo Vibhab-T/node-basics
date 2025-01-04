@@ -5,7 +5,7 @@ const server = http.createServer((req, res) => {
   const url = req.url;
   const method = req.method;
 
-  if (url === '/') {
+  if (url === '/form') {
     res.write(
       '<html><head><title>Enter Message</title></head><body><form action="/message" method="POST"><input type = "text" name = "message"><button type="submit">Send</button></form></body></html>'
     );
@@ -20,14 +20,16 @@ const server = http.createServer((req, res) => {
       body.push(chunk);
     });
 
-    req.on('end', () => {
+    //use return to execute first
+    return req.on('end', () => {
       const parsedBody = Buffer.concat(body).toString(); //getting the data the user entered.
       console.log(parsedBody); //the output here will be "message=<your message>" because the name of the input field was 'message' in html. Key-Value Pair.
       const message = parsedBody.split('=')[1];
-      fs.writeFileSync('messages.txt', message);
-      res.statusCode = 301;
-      res.setHeader('Location', '/'); //redirects the request back to the form part
-      return res.end();
+      fs.writeFile('messages.txt', message, (err) => {
+        res.statusCode = 301;
+        res.setHeader('Location', '/form'); //redirects the request back to the form part
+        return res.end();
+      });
     });
   }
 
